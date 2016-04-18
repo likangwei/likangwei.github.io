@@ -65,9 +65,6 @@ ansible-playbook要怎么实现这些功能呢? 直接看脚本
 {% endhighlight %}
 
 
-这样执行一条命令就可以完成整个代码部署了，在mac下用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入deploy dev可快速实现执行部署命令:
-
-{% include image.html url="/source/img/ansible_alfred.png" description="" %}
 
 
 另外，可以利用ansible的`roles`与`vars`模块实现定制化开发。比如在我的项目中，我的部署脚本目录结构如下:
@@ -111,4 +108,9 @@ ansible-playbook要怎么实现这些功能呢? 直接看脚本
 {% endhighlight %}
 
 我的dev, test, beta, release脚本都共用一套roles, vars来达到个性化定制，还是很灵活的。
-另外，github/gitlab 上有webhook功能，如果想在代码git push去自动部署，可以使用webhook实现。感兴趣的同学可以自己研究下。
+
+这样执行一条命令就可以完成整个代码部署了，在mac下，用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入`deploy dev`可快速实现执行部署命令:
+
+{% include image.html url="/source/img/ansible_alfred.png" description="" %}
+
+另外，github/gitlab 上有`webhook`功能，如果想在代码git push去自动部署，可以使用`webhook`实现。感兴趣的同学可以自己研究下。
