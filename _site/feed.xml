@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Your awesome title</title>
+    <title>李康炜的技术博客</title>
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
 </description>
-    <link>http://yourdomain.com/</link>
-    <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 18 Apr 2016 23:13:42 +0800</pubDate>
-    <lastBuildDate>Mon, 18 Apr 2016 23:13:42 +0800</lastBuildDate>
+    <link>http://likangwei.com/</link>
+    <atom:link href="http://likangwei.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 19 Apr 2016 01:28:01 +0800</pubDate>
+    <lastBuildDate>Tue, 19 Apr 2016 01:28:01 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -28,11 +28,124 @@
 
 </description>
         <pubDate>Mon, 18 Apr 2016 23:04:22 +0800</pubDate>
-        <link>http://yourdomain.com/jekyll/update/2016/04/18/welcome-to-jekyll.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/jekyll/update/2016/04/18/welcome-to-jekyll.html</guid>
+        <link>http://likangwei.com/jekyll/update/2016/04/18/welcome-to-jekyll.html</link>
+        <guid isPermaLink="true">http://likangwei.com/jekyll/update/2016/04/18/welcome-to-jekyll.html</guid>
         
         
         <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
+        <title>使用ansible进行快速部署</title>
+        <description>&lt;p&gt;在我们的日常开发中，免不了要将我们的代码部署到dev、test、stage、release环境中，那怎么样才能快速的让自己的代码跑在相应的机器上呢，这就是我们ansible的用途所在了。&lt;/p&gt;
+
+&lt;p&gt;ansible的原理是通过&lt;code class=&quot;highlighter-rouge&quot;&gt;SSH免密码&lt;/code&gt;的方式实现文件替换，代码部署，脚本执行等等。&lt;/p&gt;
+
+&lt;p&gt;Talk is cheap。 直接跟大家讲一下我在Django Web项目中的实际应用。&lt;/p&gt;
+
+&lt;p&gt;在平时dev的部署中，如果不用自动化部署的操作是：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 登到远端服务器&lt;/span&gt;
+➜  ~ ssh data03
+&lt;span class=&quot;c&quot;&gt;# 进入web目录&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;user@hostname:~$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /path/to/webdir
+&lt;span class=&quot;c&quot;&gt;# 更新代码&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;user@hostname:~$ &lt;/span&gt;git pull
+&lt;span class=&quot;c&quot;&gt;# 数据库升级&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;user@hostname:~$ &lt;/span&gt;python manage.py migrate
+&lt;span class=&quot;c&quot;&gt;# 重启服务&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;user@hostname:~$ &lt;/span&gt;./restart.sh&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;ansible-playbook要怎么实现这些功能呢? 直接看脚本&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yml&quot; data-lang=&quot;yml&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# main.yml&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# 将备份脚本传到线上&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;backupweb&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;src=&quot;templates/backup.sh&quot; dest=/path/to/webdir/backupdb.sh mode=0755&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# 执行备份脚本&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/path/to/webdir/backupdb.sh&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# 代码更新&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;clonecode&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;repo=***&lt;/span&gt;
+       &lt;span class=&quot;s&quot;&gt;dest=webdir&lt;/span&gt;
+       &lt;span class=&quot;s&quot;&gt;force=yes&lt;/span&gt;
+       &lt;span class=&quot;s&quot;&gt;accept_hostkey=yes&lt;/span&gt;
+       &lt;span class=&quot;s&quot;&gt;version=master&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# 替换配置文件&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;src=&quot;logging.config&quot; dest=/data/logging.config mode=622&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# 替换配置文件&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;src=&quot;templates/data.cfg&quot; dest=/path/to/webdir/data.cfg mode=0644&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# 上传数据库升级脚本&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;src=migrate.sh dest=/path/to/webdir/migrate.sh  mode=0777&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# 执行数据库升级脚本&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/path/to/webdir/migrate.sh&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# 上传重启脚本到服务器&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;src=run-django.sh dest=/path/to/webdir/run-django.sh mode=0744&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# 重启服务&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;rerun&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;这样执行一条命令就可以完成整个代码部署了，在mac下用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入deploy dev可快速实现执行部署命令:&lt;/p&gt;
+
+&lt;table class=&quot;image&quot;&gt;
+&lt;caption align=&quot;bottom&quot;&gt;&lt;/caption&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;/source/img/ansible_alfred.png&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;另外，可以利用ansible的&lt;code class=&quot;highlighter-rouge&quot;&gt;roles&lt;/code&gt;与&lt;code class=&quot;highlighter-rouge&quot;&gt;vars&lt;/code&gt;模块实现定制化开发。比如在我的项目中，我的部署脚本目录结构如下:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;# 目录结构&lt;/span&gt;
+
+├── data01.release.yml   &lt;span class=&quot;c&quot;&gt;# release服务器的部署脚本&lt;/span&gt;
+├── data03.beta.yml      &lt;span class=&quot;c&quot;&gt;# beta服务器的部署脚本&lt;/span&gt;
+├── dev.c135.yml         &lt;span class=&quot;c&quot;&gt;# dev服务器的部署脚本&lt;/span&gt;
+├── roles
+│   ├── nginx
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       └── default.conf
+│   ├── software
+│   │   └── tasks
+│   │       └── main.yml
+│   └── website
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       └── templates
+│           ├── logging.config
+│           ├── migrate.sh
+│           └── run-django.sh
+├── templates
+│   ├── dev
+│   │   ├── backup.sh.dev
+│   │   └── data.cfg.dev
+│   └── release
+│       ├── backup.sh.release
+│       ├── data.cfg.release
+└── vars
+    └── external_dev.yml&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;我的dev, test, beta, release脚本都共用一套roles, vars来达到个性化定制，还是很灵活的。
+另外，github/gitlab 上有webhook功能，如果想在代码git push去自动部署，可以使用webhook实现。感兴趣的同学可以自己研究下。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 18 Apr 2016 23:04:22 +0800</pubDate>
+        <link>http://likangwei.com/likangwei/update/2016/04/18/ansible.html</link>
+        <guid isPermaLink="true">http://likangwei.com/likangwei/update/2016/04/18/ansible.html</guid>
+        
+        
+        <category>likangwei</category>
         
         <category>update</category>
         
