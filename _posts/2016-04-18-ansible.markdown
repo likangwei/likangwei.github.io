@@ -1,0 +1,114 @@
+---
+layout: post
+title:  "使用ansible进行快速部署"
+date:   2016-04-18 23:04:22 +0800
+categories: likangwei update
+---
+
+在我们的日常开发中，免不了要将我们的代码部署到dev、test、stage、release环境中，那怎么样才能快速的让自己的代码跑在相应的机器上呢，这就是我们ansible的用途所在了。
+
+ansible的原理是通过`SSH免密码`的方式实现文件替换，代码部署，脚本执行等等。
+
+Talk is cheap。 直接跟大家讲一下我在Django Web项目中的实际应用。
+
+在平时dev的部署中，如果不用自动化部署的操作是：
+
+{% highlight shell %}
+# 登到远端服务器
+➜  ~ ssh data03
+# 进入web目录
+user@hostname:~$ cd /path/to/webdir
+# 更新代码
+user@hostname:~$ git pull
+# 数据库升级
+user@hostname:~$ python manage.py migrate
+# 重启服务
+user@hostname:~$ ./restart.sh
+{% endhighlight %}
+
+ansible-playbook要怎么实现这些功能呢? 直接看脚本
+
+
+{% highlight yml %}
+
+# main.yml
+
+# 将备份脚本传到线上
+- name: backupweb
+  template: src="templates/backup.sh" dest=/path/to/webdir/backupdb.sh mode=0755
+# 执行备份脚本
+- command: "/path/to/webdir/backupdb.sh"
+
+# 代码更新
+- name: clonecode
+  git: repo=***
+       dest=webdir
+       force=yes
+       accept_hostkey=yes
+       version=master
+
+# 替换配置文件
+- template: src="logging.config" dest={{workdir}}/data/logging.config mode=622
+# 替换配置文件
+- template: src="templates/data.cfg" dest=/path/to/webdir/data.cfg mode=0644
+
+# 上传数据库升级脚本
+- template: src=migrate.sh dest=/path/to/webdir/migrate.sh  mode=0777
+# 执行数据库升级脚本
+- command: "/path/to/webdir/migrate.sh"
+
+# 上传重启脚本到服务器
+- template: src=run-django.sh dest=/path/to/webdir/run-django.sh mode=0744
+  notify:
+    # 重启服务
+    - rerun
+{% endhighlight %}
+
+
+这样执行一条命令就可以完成整个代码部署了，在mac下用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入deploy dev可快速实现执行部署命令:
+
+{% include image.html url="/source/img/ansible_alfred.png" description="" %}
+
+
+另外，可以利用ansible的`roles`与`vars`模块实现定制化开发。比如在我的项目中，我的部署脚本目录结构如下:
+
+{% highlight shell %}
+
+# 目录结构
+
+├── data01.release.yml   # release服务器的部署脚本
+├── data03.beta.yml      # beta服务器的部署脚本
+├── dev.c135.yml         # dev服务器的部署脚本
+├── roles
+│   ├── nginx
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       └── default.conf
+│   ├── software
+│   │   └── tasks
+│   │       └── main.yml
+│   └── website
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       └── templates
+│           ├── logging.config
+│           ├── migrate.sh
+│           └── run-django.sh
+├── templates
+│   ├── dev
+│   │   ├── backup.sh.dev
+│   │   └── data.cfg.dev
+│   └── release
+│       ├── backup.sh.release
+│       ├── data.cfg.release
+└── vars
+    └── external_dev.yml
+{% endhighlight %}
+
+我的dev, test, beta, release脚本都共用一套roles, vars来达到个性化定制，还是很灵活的。
+另外，github/gitlab 上有webhook功能，如果想在代码git push去自动部署，可以使用webhook实现。感兴趣的同学可以自己研究下。
