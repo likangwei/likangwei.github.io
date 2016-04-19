@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>李康炜的技术博客</title>
-  <meta name="description" content="淘生词插件开发者。淘生词 http://readdoc.net">
+  <title>利用pylint让Python代码符合pep8标准</title>
+  <meta name="description" content="在开发python项目时，保持代码的整洁是非常重要的。Python的pep8是一个非常好的规范标准。那怎么样让机器自动来检查我的代码呢？">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://likangwei.com/">
+  <link rel="canonical" href="http://likangwei.com/likangwei/update/2016/04/18/pylint.html">
   <link rel="alternate" type="application/rss+xml" title="李康炜的技术博客" href="http://likangwei.com/feed.xml">
 </head>
 
@@ -54,33 +54,36 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">利用pylint让Python代码符合pep8标准</h1>
+    <p class="post-meta"><time datetime="2016-04-18T23:04:22+08:00" itemprop="datePublished">Apr 18, 2016</time></p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Apr 18, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <p>在开发python项目时，保持代码的整洁是非常重要的。Python的pep8是一个非常好的规范标准。那怎么样让机器自动来检查我的代码呢？</p>
 
-        <h2>
-          <a class="post-link" href="/likangwei/update/2016/04/18/pylint.html">利用pylint让Python代码符合pep8标准</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 18, 2016</span>
+<p>终于让我在Github上找到了<a href="https://github.com/sebdah/git-pylint-commit-hook">git-pylint-commit-hook</a>这个项目。它可以非常方便的对需要git commit的代码进行检查，如果分数小于8分则会commit失败。</p>
 
-        <h2>
-          <a class="post-link" href="/likangwei/update/2016/04/18/ansible.html">使用ansible进行快速部署</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p>其原理是这样的:</p>
 
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
+<p>如果你的项目使用了git来管理代码，则在项目目录下有一个.git 文件夹, .git 文件夹下面 有一个hooks文件夹，在这个目录下我们需要建立一个可执行文件
+“pre-commit”</p>
 
-</div>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/bash</span>
+git-pylint-commit-hook</code></pre></figure>
+
+<p>在我们执行 git commit操作时，会执行pre-commit脚本，如果exit code不为0的话，则取消commit操作。</p>
+
+<p>git-pylint-commit-hook会将add/modify两类的py文件进行代码检查，如果检查分数小于8分就执行exit 1.</p>
+
+<p>这样就会commit失败，强制性的将代码保持一个比较干净的状态。</p>
+
+
+  </div>
+
+</article>
 
       </div>
     </div>

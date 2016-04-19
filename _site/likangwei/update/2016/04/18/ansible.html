@@ -115,13 +115,6 @@
     <span class="c1"># 重启服务</span>
     <span class="pi">-</span> <span class="s">rerun</span></code></pre></figure>
 
-<p>这样执行一条命令就可以完成整个代码部署了，在mac下用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入deploy dev可快速实现执行部署命令:</p>
-
-<table class="image">
-<caption align="bottom"></caption>
-<tr><td><img src="/source/img/ansible_alfred.png" alt="" /></td></tr>
-</table>
-
 <p>另外，可以利用ansible的<code class="highlighter-rouge">roles</code>与<code class="highlighter-rouge">vars</code>模块实现定制化开发。比如在我的项目中，我的部署脚本目录结构如下:</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c"># 目录结构</span>
@@ -159,8 +152,16 @@
 └── vars
     └── external_dev.yml</code></pre></figure>
 
-<p>我的dev, test, beta, release脚本都共用一套roles, vars来达到个性化定制，还是很灵活的。
-另外，github/gitlab 上有webhook功能，如果想在代码git push去自动部署，可以使用webhook实现。感兴趣的同学可以自己研究下。</p>
+<p>我的dev, test, beta, release脚本都共用一套roles, vars来达到个性化定制，还是很灵活的。</p>
+
+<p>这样执行一条命令就可以完成整个代码部署了，在mac下，用Alfred编写一个workflow可以更方便的执行哦，按option+空格键，再输入<code class="highlighter-rouge">deploy dev</code>可快速实现执行部署命令:</p>
+
+<table class="image">
+<caption align="bottom"></caption>
+<tr><td><img src="/source/img/ansible_alfred.png" alt="" /></td></tr>
+</table>
+
+<p>另外，github/gitlab 上有<code class="highlighter-rouge">webhook</code>功能，如果想在代码git push去自动部署，可以使用<code class="highlighter-rouge">webhook</code>实现。感兴趣的同学可以自己研究下。</p>
 
   </div>
 
@@ -198,8 +199,7 @@
       </div>
 
       <div class="footer-col footer-col-3">
-        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-</p>
+        <p>淘生词插件开发者。淘生词 http://readdoc.net</p>
       </div>
     </div>
 
