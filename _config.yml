@@ -8,9 +8,9 @@
 # Site settings
 title: 李康炜的技术博客
 email: 262708239@qq.com
-description:  淘生词插件开发者。淘生词: http://readdoc.net.
+description:  淘生词插件开发者。淘生词 http://readdoc.net
 
-baseurl: "http://likangwei.com/blog" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://likangwei.com" # the base hostname & protocol for your site
 twitter_username: 
 github_username:  likangwei
